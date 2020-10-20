@@ -1,6 +1,6 @@
 package com.gmail.maxsmv1998.eurodiffusion.util;
 
-import com.gmail.maxsmv1998.eurodiffusion.model.CountryModel;
+import com.gmail.maxsmv1998.eurodiffusion.data.CountryData;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,12 +17,12 @@ public class InputReader {
     private InputReader() {
     }
 
-    public static List<CountryModel> getInputData(String filepath) {
-        List<CountryModel> countries = new ArrayList<>();
+    public static List<CountryData> getInputData(String filepath) {
+        List<CountryData> countries = new ArrayList<>();
         try (Scanner sc = getScanner(filepath)) {
             int countriesNum = sc.nextInt();
             for (int i = 0; i < countriesNum; i++) {
-                countries.add(new CountryModel(
+                countries.add(new CountryData(
                         sc.next(),
                         sc.nextInt(),
                         sc.nextInt(),

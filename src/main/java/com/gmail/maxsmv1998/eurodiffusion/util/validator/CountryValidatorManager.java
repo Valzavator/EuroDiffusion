@@ -1,6 +1,6 @@
 package com.gmail.maxsmv1998.eurodiffusion.util.validator;
 
-import com.gmail.maxsmv1998.eurodiffusion.model.CountryModel;
+import com.gmail.maxsmv1998.eurodiffusion.data.CountryData;
 import com.gmail.maxsmv1998.eurodiffusion.util.validator.impl.NumberValidator;
 import com.gmail.maxsmv1998.eurodiffusion.util.validator.impl.RegexValidator;
 
@@ -21,7 +21,7 @@ public class CountryValidatorManager {
     private CountryValidatorManager() {
     }
 
-    public static List<String> validate(CountryModel country) {
+    public static List<String> validate(CountryData country) {
         List<String> errors = new ArrayList<>();
 
         if (nameValidator.isInvalid(country.getName())) {

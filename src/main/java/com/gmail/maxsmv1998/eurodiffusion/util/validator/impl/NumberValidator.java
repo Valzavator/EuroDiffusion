@@ -17,6 +17,6 @@ public class NumberValidator implements Validator<Integer> {
     public boolean isValid(Integer number) {
         return Objects.nonNull(number)
                 && minValue.compareTo(number) <= 0
-                && maxValue.compareTo(number) > 0;
+                && maxValue.compareTo(number) >= 0;
     }
 }
