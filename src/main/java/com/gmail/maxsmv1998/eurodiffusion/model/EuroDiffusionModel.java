@@ -3,6 +3,7 @@ package com.gmail.maxsmv1998.eurodiffusion.model;
 import com.gmail.maxsmv1998.eurodiffusion.data.CountryData;
 import com.gmail.maxsmv1998.eurodiffusion.util.validator.CountryValidatorManager;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,7 +11,9 @@ import static com.gmail.maxsmv1998.eurodiffusion.constant.InputRestrictions.MAX_
 import static com.gmail.maxsmv1998.eurodiffusion.constant.InputRestrictions.MAX_COUNTRIES;
 import static com.gmail.maxsmv1998.eurodiffusion.constant.InputRestrictions.MIN_COORDINATE;
 
-public class EuroDiffusionModel {
+public class EuroDiffusionModel implements Serializable {
+    private static final long serialVersionUID = -4021491948784472162L;
+
     private final List<CountryData> countries;
     private MapModel countriesMap;
 

@@ -1,6 +1,7 @@
 package com.gmail.maxsmv1998.eurodiffusion.util;
 
 import com.gmail.maxsmv1998.eurodiffusion.data.CountryData;
+import com.gmail.maxsmv1998.eurodiffusion.data.TestCaseData;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,31 +13,36 @@ import java.util.Scanner;
 import static com.gmail.maxsmv1998.eurodiffusion.constant.Paths.RESOURCES_DIR;
 
 public class InputReader {
-    private static final String END_OF_FILE = "0";
 
     private InputReader() {
     }
 
-    public static List<CountryData> getInputData(String filepath) {
-        List<CountryData> countries = new ArrayList<>();
+    public static List<TestCaseData> getInputData(String filepath) {
+        List<TestCaseData> testCases = new ArrayList<>();
+        int countriesNum;
         try (Scanner sc = getScanner(filepath)) {
-            int countriesNum = sc.nextInt();
-            for (int i = 0; i < countriesNum; i++) {
-                countries.add(new CountryData(
-                        sc.next(),
-                        sc.nextInt(),
-                        sc.nextInt(),
-                        sc.nextInt(),
-                        sc.nextInt()
-                ));
+            while ((countriesNum = sc.nextInt()) != 0) {
+                testCases.add(getTestCase(sc, countriesNum));
             }
-            if (!END_OF_FILE.equals(sc.next()) || sc.hasNext()) {
-                throw new IllegalArgumentException("Invalid end of file!");
-            }
+            checkEndOfFile(sc);
+            return testCases;
         } catch (NoSuchElementException ex) {
             throw new IllegalArgumentException("Invalid input data!", ex);
         }
-        return countries;
+    }
+
+    private static TestCaseData getTestCase(Scanner sc, int countriesNum) {
+        List<CountryData> countries = new ArrayList<>();
+        for (int i = 0; i < countriesNum; i++) {
+            countries.add(new CountryData(
+                    sc.next(),
+                    sc.nextInt(),
+                    sc.nextInt(),
+                    sc.nextInt(),
+                    sc.nextInt()
+            ));
+        }
+        return new TestCaseData(countries);
     }
 
     private static Scanner getScanner(String filepath) {
@@ -44,6 +50,12 @@ public class InputReader {
             return new Scanner(new File(RESOURCES_DIR, filepath));
         } catch (FileNotFoundException ex) {
             throw new IllegalArgumentException("File '" + filepath + "' does not exist!", ex);
+        }
+    }
+
+    private static void checkEndOfFile(Scanner sc) {
+        if (sc.hasNext()) {
+            throw new IllegalArgumentException("Invalid end of file!");
         }
     }
 }

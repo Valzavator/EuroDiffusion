@@ -2,13 +2,16 @@ package com.gmail.maxsmv1998.eurodiffusion.model;
 
 import com.gmail.maxsmv1998.eurodiffusion.util.validator.impl.NumberValidator;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
 import static com.gmail.maxsmv1998.eurodiffusion.constant.InputRestrictions.MIN_COORDINATE;
 import static com.gmail.maxsmv1998.eurodiffusion.constant.InputRestrictions.MAX_COORDINATE;
 
-public class MapModel {
+public class MapModel implements Serializable {
+    private static final long serialVersionUID = -6080451792203424960L;
+
     private static final NumberValidator initialCoordinateValidator = new NumberValidator(MIN_COORDINATE, MAX_COORDINATE);
 
     private final NumberValidator actualXCoordinateValidator;
@@ -50,7 +53,7 @@ public class MapModel {
         StringBuilder sb = new StringBuilder();
         for (int y = lengthY - 1; y >= 0; y--) {
             for (int x = 0; x < lengthX; x++) {
-                sb.append(String.format("%10s", countriesMap[y][x]));
+                sb.append(String.format("%-15s", countriesMap[y][x]));
             }
             sb.append("\n");
         }
