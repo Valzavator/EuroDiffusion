@@ -27,22 +27,22 @@ public class CountryValidatorManager {
         if (nameValidator.isInvalid(country.getName())) {
             errors.add(ERROR_NAME);
         }
-        if (coordinateValidator.isInvalid(country.getXL())) {
+        if (coordinateValidator.isInvalid(country.getXl())) {
             errors.add(getCoordinateError("xl"));
         }
-        if (coordinateValidator.isInvalid(country.getYL())) {
+        if (coordinateValidator.isInvalid(country.getYl())) {
             errors.add(getCoordinateError("yl"));
         }
-        if (coordinateValidator.isInvalid(country.getXH())) {
+        if (coordinateValidator.isInvalid(country.getXh())) {
             errors.add(getCoordinateError("xh"));
         }
-        if (coordinateValidator.isInvalid(country.getYH())) {
+        if (coordinateValidator.isInvalid(country.getYh())) {
             errors.add(getCoordinateError("yh"));
         }
-        if (country.getXL() > country.getXH()) {
+        if (country.getXl() > country.getXh()) {
             errors.add("Invalid coordinate values. xl ≤ xh");
         }
-        if (country.getYL() > country.getYH()) {
+        if (country.getYl() > country.getYh()) {
             errors.add("Invalid coordinate values. yl ≤ yh");
         }
 

@@ -34,13 +34,13 @@ public class InputReader {
     private static TestCaseData getTestCase(Scanner sc, int countriesNum) {
         List<CountryData> countries = new ArrayList<>();
         for (int i = 0; i < countriesNum; i++) {
-            countries.add(new CountryData(
-                    sc.next(),
-                    sc.nextInt(),
-                    sc.nextInt(),
-                    sc.nextInt(),
-                    sc.nextInt()
-            ));
+            countries.add(CountryData.builder()
+                    .name(sc.next())
+                    .xl(sc.nextInt())
+                    .yl(sc.nextInt())
+                    .xh(sc.nextInt())
+                    .yh(sc.nextInt())
+                    .build());
         }
         return new TestCaseData(countries);
     }

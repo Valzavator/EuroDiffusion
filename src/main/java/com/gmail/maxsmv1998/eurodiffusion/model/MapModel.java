@@ -1,51 +1,78 @@
 package com.gmail.maxsmv1998.eurodiffusion.model;
 
 import com.gmail.maxsmv1998.eurodiffusion.util.validator.impl.NumberValidator;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Value;
 
-import java.io.Serializable;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static com.gmail.maxsmv1998.eurodiffusion.constant.InputRestrictions.MIN_COORDINATE;
 import static com.gmail.maxsmv1998.eurodiffusion.constant.InputRestrictions.MAX_COORDINATE;
 
-public class MapModel implements Serializable {
-    private static final long serialVersionUID = -6080451792203424960L;
-
+@Value
+public class MapModel {
     private static final NumberValidator initialCoordinateValidator = new NumberValidator(MIN_COORDINATE, MAX_COORDINATE);
+    private static final String HOLE = "(empty)";
 
-    private final NumberValidator actualXCoordinateValidator;
-    private final NumberValidator actualYCoordinateValidator;
+    @Getter(AccessLevel.NONE)
+    NumberValidator actualXCoordinateValidator;
+    @Getter(AccessLevel.NONE)
+    NumberValidator actualYCoordinateValidator;
 
-    private final String[][] countriesMap;
-    private final int lengthX;
-    private final int lengthY;
+    @Getter(AccessLevel.NONE)
+    CityModel[][] countriesMap;
+    int lengthX;
+    int lengthY;
 
     public MapModel(int lengthX, int lengthY) {
         this.lengthX = requireWithinRestrictions(lengthX);
         this.lengthY = requireWithinRestrictions(lengthY);
-        this.countriesMap = new String[lengthY][lengthX];
+        this.countriesMap = new CityModel[lengthY][lengthX];
 
         this.actualXCoordinateValidator = new NumberValidator(MIN_COORDINATE, lengthX);
         this.actualYCoordinateValidator = new NumberValidator(MIN_COORDINATE, lengthY);
     }
 
-    public String set(int x, int y, String value) {
+    public CityModel set(int x, int y, CityModel city) {
         checkCoordinates(x, y);
-
-        int convertX = convertCoordinate(x);
-        int convertY = convertCoordinate(y);
-        String valueToReturn = countriesMap[convertY][convertX];
-        countriesMap[convertY][convertX] = value;
+        int convertedX = convertCoordinate(x);
+        int convertedY = convertCoordinate(y);
+        CityModel valueToReturn = countriesMap[convertedY][convertedX];
+        countriesMap[convertedY][convertedX] = city;
         return valueToReturn;
     }
 
-    public int getLengthX() {
-        return lengthX;
+    public CityModel get(int x, int y) {
+        checkCoordinates(x, y);
+        int convertedX = convertCoordinate(x);
+        int convertedY = convertCoordinate(y);
+        return countriesMap[convertedY][convertedX];
     }
 
-    public int getLengthY() {
-        return lengthY;
+    public List<CityModel> getNeighbours(int x, int y) {
+        checkCoordinates(x, y);
+        List<CityModel> neighbours = new ArrayList<>();
+        addNeighbourIfExist(neighbours, x - 1, y);
+        addNeighbourIfExist(neighbours, x + 1, y);
+        addNeighbourIfExist(neighbours, x, y - 1);
+        addNeighbourIfExist(neighbours, x, y + 1);
+        return neighbours;
+    }
+
+    private void addNeighbourIfExist(List<CityModel> neighbours, int x, int y) {
+        if (actualXCoordinateValidator.isInvalid(x)
+                || actualYCoordinateValidator.isInvalid(y)) {
+            return;
+        }
+        int convertedX = convertCoordinate(x);
+        int convertedY = convertCoordinate(y);
+        CityModel city = countriesMap[convertedY][convertedX];
+        if (Objects.nonNull(city)) {
+            neighbours.add(city);
+        }
     }
 
     @Override
@@ -53,34 +80,19 @@ public class MapModel implements Serializable {
         StringBuilder sb = new StringBuilder();
         for (int y = lengthY - 1; y >= 0; y--) {
             for (int x = 0; x < lengthX; x++) {
-                sb.append(String.format("%-15s", countriesMap[y][x]));
+                String name = Objects.nonNull(countriesMap[y][x])
+                        ? countriesMap[y][x].getCountry().getName()
+                        : HOLE;
+                sb.append(String.format("%-15s", name));
             }
             sb.append("\n");
         }
         return sb.toString();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MapModel mapModel = (MapModel) o;
-        return lengthX == mapModel.lengthX &&
-                lengthY == mapModel.lengthY &&
-                Arrays.equals(countriesMap, mapModel.countriesMap);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(lengthX, lengthY);
-        result = 31 * result + Arrays.hashCode(countriesMap);
-        return result;
-    }
-
     private int convertCoordinate(int coordinate) {
         return --coordinate;
     }
-
 
     private int requireWithinRestrictions(int coordinate) {
         if (initialCoordinateValidator.isInvalid(coordinate)) {
