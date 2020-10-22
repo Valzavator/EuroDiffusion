@@ -9,7 +9,7 @@ import java.util.List;
 
 
 @Value
-public class CountryModel {
+class CountryModel {
     String name;
     int xl;
     int yl;
@@ -32,16 +32,14 @@ public class CountryModel {
         this.yh = yh;
     }
 
-    public boolean incAmountOfDays() {
+    public void incAmountOfDays() {
         if (!isComplete) {
             amountOfDays++;
         }
-        return isComplete;
     }
 
     public boolean checkComplete() {
-        isComplete = true;
-
+        isComplete = isComplete || cities.stream().allMatch(CityModel::checkComplete);
         return isComplete;
     }
 

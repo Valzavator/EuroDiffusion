@@ -13,7 +13,7 @@ import static com.gmail.maxsmv1998.eurodiffusion.constant.InputRestrictions.MIN_
 import static com.gmail.maxsmv1998.eurodiffusion.constant.InputRestrictions.MAX_COORDINATE;
 
 @Value
-public class MapModel {
+class MapModel {
     private static final NumberValidator initialCoordinateValidator = new NumberValidator(MIN_COORDINATE, MAX_COORDINATE);
     private static final String HOLE = "(empty)";
 

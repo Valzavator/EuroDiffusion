@@ -22,13 +22,44 @@ public class EuroDiffusionModel {
     public EuroDiffusionModel(List<CountryData> countries) {
         validateCountries(countries);
         this.countries = convert(countries);
-
         buildCountriesMap();
         simulateEuroDiffusionProcess();
     }
 
     public ResultModel simulateEuroDiffusionProcess() {
+        List<CityModel> allCities = countries.stream()
+                .flatMap(country -> country.getCities().stream())
+                .collect(Collectors.toList());
+        while (!checkComplete(countries)) {
+            prepareTransactionsForCities(allCities);
+            executeTransactionsForCities(allCities);
+            countries.forEach(CountryModel::incAmountOfDays);
+        }
+        return getResult(countries);
+    }
 
+    private boolean checkComplete(List<CountryModel> countries) {
+        for (CountryModel country : countries) {
+            if (!country.isComplete()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void prepareTransactionsForCities(List<CityModel> cities) {
+        cities.forEach(city -> countriesMap.getNeighbours(city.getX(), city.getY())
+                .forEach(neighbour -> city.addTransaction(neighbour.getTransactionForNeighbour()))
+        );
+    }
+
+    private void executeTransactionsForCities(List<CityModel> cities) {
+        cities.forEach(CityModel::executeTransactions);
+    }
+
+    private ResultModel getResult(List<CountryModel> countries) {
+        countries.forEach(c -> LOG.info("{0} - {1}", c.getName(), c.getAmountOfDays()));
+        // TODO
         return null;
     }
 
@@ -63,7 +94,7 @@ public class EuroDiffusionModel {
                 }
             }
         });
-        LOG.info(countriesMap);
+        LOG.debug(countriesMap);
         checkConnectionsBetweenCountries();
     }
 
@@ -71,7 +102,7 @@ public class EuroDiffusionModel {
         if (countries.size() == 1) {
             return;
         }
-        for (CountryModel currentCountry : countries) {
+        countries.forEach(currentCountry -> {
             boolean cityFromAnotherCountryExist = false;
             for (CityModel currentCity : currentCountry.getCities()) {
                 List<CityModel> neighbours = countriesMap.getNeighbours(currentCity.getX(), currentCity.getY());
@@ -84,7 +115,7 @@ public class EuroDiffusionModel {
                 throw new IllegalArgumentException(
                         "Invalid countries coordinates. A country must connect with another one: " + currentCountry);
             }
-        }
+        });
     }
 
     private boolean cityFromAnotherCountryExist(CountryModel currentCountry, List<CityModel> neighbours) {
@@ -98,7 +129,10 @@ public class EuroDiffusionModel {
     }
 
     private CityModel createCity(CountryModel country, int x, int y) {
-        BankModel bank = new BankModel(countries, country);
+        List<String> motifs = countries.stream()
+                .map(CountryModel::getName)
+                .collect(Collectors.toList());
+        BankModel bank = new BankModel(motifs, country.getName());
         return CityModel.builder()
                 .country(country)
                 .bankModel(bank)

@@ -16,10 +16,14 @@ public class Runner {
     public static void main(String[] args) {
         List<TestCaseData> testCases = InputReader.getInputData(FILE_NAME);
         for (TestCaseData testCase : testCases) {
-            LOG.info(testCase);
-            ResultModel resultModel = new EuroDiffusionModel(testCase.getCountries())
-                    .simulateEuroDiffusionProcess();
-            LOG.info(resultModel);
+            try {
+                LOG.info(testCase);
+                ResultModel resultModel = new EuroDiffusionModel(testCase.getCountries())
+                        .simulateEuroDiffusionProcess();
+                LOG.info(resultModel);
+            } catch (Exception ex) {
+                LOG.error(ex);
+            }
         }
     }
 

@@ -11,10 +11,10 @@
         </Console>
         <RollingFile
                 name="SERVER_LOGS_FILE"
-                fileName="${serverLogsFilepath}/log.txt"
-                filePattern="${serverLogsFilepath}/periodicals.%d{yyyy-MM-dd}-%i.log.gz"
+                fileName="${serverLogsFilepath}/log.log"
+                filePattern="${serverLogsFilepath}/log.%d{yyyy-MM-dd}-%i.log"
                 ignoreExceptions="false">
-            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="${pattern}"/>
             <Policies>
                 <OnStartupTriggeringPolicy/>
@@ -26,7 +26,7 @@
     </Appenders>
     <Loggers>
         <Root level="DEBUG">
-            <AppenderRef ref="SERVER_LOGS_FILE"/>
+<!--            <AppenderRef ref="SERVER_LOGS_FILE"/>-->
             <AppenderRef ref="STDOUT"/>
         </Root>
         <Logger name="com.gmail.maxsvynarchuk" level="DEBUG" additivity="false">
