@@ -1,7 +1,11 @@
 package com.gmail.maxsmv1998.eurodiffusion.model;
 
 import com.gmail.maxsmv1998.Runner;
-import com.gmail.maxsmv1998.eurodiffusion.data.CountryData;
+import com.gmail.maxsmv1998.eurodiffusion.data.InputCountryData;
+import com.gmail.maxsmv1998.eurodiffusion.data.OutputCountryData;
+import com.gmail.maxsmv1998.eurodiffusion.data.ResultData;
+import com.gmail.maxsmv1998.eurodiffusion.data.TestCaseData;
+import com.gmail.maxsmv1998.eurodiffusion.util.comporator.OutputCountryDataComparator;
 import com.gmail.maxsmv1998.eurodiffusion.util.validator.CountryValidatorManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +16,7 @@ import java.util.stream.Collectors;
 
 import static com.gmail.maxsmv1998.eurodiffusion.constant.InputRestrictions.MAX_COORDINATE;
 import static com.gmail.maxsmv1998.eurodiffusion.constant.InputRestrictions.MAX_COUNTRIES;
+import static com.gmail.maxsmv1998.eurodiffusion.constant.InputRestrictions.MIN_COUNTRIES;
 
 public class EuroDiffusionModel {
     private static final Logger LOG = LogManager.getLogger(Runner.class.getSimpleName());
@@ -19,32 +24,28 @@ public class EuroDiffusionModel {
     private final List<CountryModel> countries;
     private MapModel countriesMap;
 
-    public EuroDiffusionModel(List<CountryData> countries) {
-        validateCountries(countries);
-        this.countries = convert(countries);
+    public EuroDiffusionModel(TestCaseData testCase) {
+        LOG.debug(testCase);
+        validateCountries(testCase.getCountries());
+        this.countries = convert(testCase.getCountries());
         buildCountriesMap();
-        simulateEuroDiffusionProcess();
     }
 
-    public ResultModel simulateEuroDiffusionProcess() {
+    public ResultData simulateEuroDiffusionProcess() {
         List<CityModel> allCities = countries.stream()
                 .flatMap(country -> country.getCities().stream())
                 .collect(Collectors.toList());
-        while (!checkComplete(countries)) {
+        while (!startNewDay(countries)) {
             prepareTransactionsForCities(allCities);
             executeTransactionsForCities(allCities);
-            countries.forEach(CountryModel::incAmountOfDays);
         }
         return getResult(countries);
     }
 
-    private boolean checkComplete(List<CountryModel> countries) {
-        for (CountryModel country : countries) {
-            if (!country.isComplete()) {
-                return false;
-            }
-        }
-        return true;
+    private boolean startNewDay(List<CountryModel> countries) {
+        countries.forEach(CountryModel::incAmountOfDays);
+        return countries.stream()
+                .allMatch(CountryModel::isComplete);
     }
 
     private void prepareTransactionsForCities(List<CityModel> cities) {
@@ -57,16 +58,18 @@ public class EuroDiffusionModel {
         cities.forEach(CityModel::executeTransactions);
     }
 
-    private ResultModel getResult(List<CountryModel> countries) {
-        countries.forEach(c -> LOG.info("{0} - {1}", c.getName(), c.getAmountOfDays()));
-        // TODO
-        return null;
+    private ResultData getResult(List<CountryModel> countries) {
+        List<OutputCountryData> result = countries.stream()
+                .map(country -> new OutputCountryData(country.getName(), country.getAmountOfDays()))
+                .sorted(new OutputCountryDataComparator())
+                .collect(Collectors.toList());
+        return new ResultData(result);
     }
 
-    private void validateCountries(List<CountryData> countries) {
-        if (countries.size() > MAX_COUNTRIES) {
-            throw new IllegalArgumentException("The maximum number of countries allowed is " +
-                    MAX_COUNTRIES + ". But given " + countries.size() + "instead.");
+    private void validateCountries(List<InputCountryData> countries) {
+        if (countries.size() < MIN_COUNTRIES || countries.size() > MAX_COUNTRIES) {
+            throw new IllegalArgumentException("Invalid number of countries: " + countries.size() +
+                    ". It should be in the range " + MIN_COUNTRIES + " to " + MAX_COUNTRIES);
         }
         countries.forEach(country -> {
             List<String> errors = CountryValidatorManager.validate(country);
@@ -87,8 +90,8 @@ public class EuroDiffusionModel {
                     country.addCity(city);
                     CityModel returnedValue = countriesMap.set(x, y, city);
                     if (Objects.nonNull(returnedValue)) {
-                        throw new IllegalArgumentException("Invalid countries coordinates. " +
-                                country.getName() + " intersects with " + returnedValue.getCountry().getName() +
+                        throw new IllegalArgumentException("Invalid country coordinates. " + country.getUniqueName() +
+                                " intersects with " + returnedValue.getCountry().getUniqueName() +
                                 " at [" + x + "," + y + "]");
                     }
                 }
@@ -113,15 +116,15 @@ public class EuroDiffusionModel {
             }
             if (!cityFromAnotherCountryExist) {
                 throw new IllegalArgumentException(
-                        "Invalid countries coordinates. A country must connect with another one: " + currentCountry);
+                        "Invalid country coordinates. A country must connect with another one: " + currentCountry);
             }
         });
     }
 
     private boolean cityFromAnotherCountryExist(CountryModel currentCountry, List<CityModel> neighbours) {
         for (CityModel neighbour : neighbours) {
-            String cityCountryName = neighbour.getCountry().getName();
-            if (!cityCountryName.equals(currentCountry.getName())) {
+            String cityCountryName = neighbour.getCountry().getUniqueName();
+            if (!cityCountryName.equals(currentCountry.getUniqueName())) {
                 return true;
             }
         }
@@ -130,9 +133,9 @@ public class EuroDiffusionModel {
 
     private CityModel createCity(CountryModel country, int x, int y) {
         List<String> motifs = countries.stream()
-                .map(CountryModel::getName)
+                .map(CountryModel::getUniqueName)
                 .collect(Collectors.toList());
-        BankModel bank = new BankModel(motifs, country.getName());
+        BankModel bank = new BankModel(motifs, country.getUniqueName());
         return CityModel.builder()
                 .country(country)
                 .bankModel(bank)
@@ -141,7 +144,7 @@ public class EuroDiffusionModel {
                 .build();
     }
 
-    private List<CountryModel> convert(List<CountryData> countries) {
+    private List<CountryModel> convert(List<InputCountryData> countries) {
         return countries.stream()
                 .map(countryData ->
                         CountryModel.builder()

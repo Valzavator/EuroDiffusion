@@ -1,6 +1,6 @@
 package com.gmail.maxsmv1998.eurodiffusion.util.validator;
 
-import com.gmail.maxsmv1998.eurodiffusion.data.CountryData;
+import com.gmail.maxsmv1998.eurodiffusion.data.InputCountryData;
 import com.gmail.maxsmv1998.eurodiffusion.util.validator.impl.NumberValidator;
 import com.gmail.maxsmv1998.eurodiffusion.util.validator.impl.RegexValidator;
 
@@ -16,12 +16,12 @@ public class CountryValidatorManager {
     public static final NumberValidator coordinateValidator = new NumberValidator(MIN_COORDINATE, MAX_COORDINATE);
 
     public static final String ERROR_NAME = "Invalid name. Name is a single word with at most 25 characters.";
-    public static final String ERROR_COORDINATE_PATTERN = "Invalid {0}. 1 ≤ {0} ≤ 10.";
+    public static final String ERROR_COORDINATE_PATTERN = "Invalid {0}. 1 ≤ {0} ≤ 10";
 
     private CountryValidatorManager() {
     }
 
-    public static List<String> validate(CountryData country) {
+    public static List<String> validate(InputCountryData country) {
         List<String> errors = new ArrayList<>();
 
         if (nameValidator.isInvalid(country.getName())) {

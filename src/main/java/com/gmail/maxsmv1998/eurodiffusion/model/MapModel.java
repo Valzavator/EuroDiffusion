@@ -81,11 +81,13 @@ class MapModel {
         for (int y = lengthY - 1; y >= 0; y--) {
             for (int x = 0; x < lengthX; x++) {
                 String name = Objects.nonNull(countriesMap[y][x])
-                        ? countriesMap[y][x].getCountry().getName()
+                        ? String.format("%s(%d,%d)", countriesMap[y][x].getCountry().getName(), x, y)
                         : HOLE;
-                sb.append(String.format("%-15s", name));
+                sb.append(String.format("%-20s", name));
             }
-            sb.append("\n");
+            if (y > 0) {
+                sb.append("\n");
+            }
         }
         return sb.toString();
     }

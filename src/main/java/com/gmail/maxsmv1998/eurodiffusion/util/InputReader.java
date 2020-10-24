@@ -1,6 +1,6 @@
 package com.gmail.maxsmv1998.eurodiffusion.util;
 
-import com.gmail.maxsmv1998.eurodiffusion.data.CountryData;
+import com.gmail.maxsmv1998.eurodiffusion.data.InputCountryData;
 import com.gmail.maxsmv1998.eurodiffusion.data.TestCaseData;
 
 import java.io.File;
@@ -21,20 +21,20 @@ public class InputReader {
         List<TestCaseData> testCases = new ArrayList<>();
         int countriesNum;
         try (Scanner sc = getScanner(filepath)) {
-            while ((countriesNum = sc.nextInt()) != 0) {
-                testCases.add(getTestCase(sc, countriesNum));
+            int caseNumber = 0;
+            while ((countriesNum = getCountriesNumber(sc)) != 0) {
+                testCases.add(getTestCase(++caseNumber, sc, countriesNum));
             }
-            checkEndOfFile(sc);
             return testCases;
         } catch (NoSuchElementException ex) {
             throw new IllegalArgumentException("Invalid input data!", ex);
         }
     }
 
-    private static TestCaseData getTestCase(Scanner sc, int countriesNum) {
-        List<CountryData> countries = new ArrayList<>();
+    private static TestCaseData getTestCase(int caseNumber, Scanner sc, int countriesNum) {
+        List<InputCountryData> countries = new ArrayList<>();
         for (int i = 0; i < countriesNum; i++) {
-            countries.add(CountryData.builder()
+            countries.add(InputCountryData.builder()
                     .name(sc.next())
                     .xl(sc.nextInt())
                     .yl(sc.nextInt())
@@ -42,7 +42,7 @@ public class InputReader {
                     .yh(sc.nextInt())
                     .build());
         }
-        return new TestCaseData(countries);
+        return new TestCaseData(caseNumber, countries);
     }
 
     private static Scanner getScanner(String filepath) {
@@ -53,9 +53,13 @@ public class InputReader {
         }
     }
 
-    private static void checkEndOfFile(Scanner sc) {
-        if (sc.hasNext()) {
+    private static int getCountriesNumber(Scanner sc) {
+        String countriesNumberString = sc.next();
+        int countriesNumber = Integer.parseInt(countriesNumberString);
+        if (countriesNumber == 0 &&
+                (countriesNumberString.length() > 1 || sc.hasNext())) {
             throw new IllegalArgumentException("Invalid end of file!");
         }
+        return countriesNumber;
     }
 }

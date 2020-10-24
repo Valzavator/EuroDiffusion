@@ -33,17 +33,17 @@ class CountryModel {
     }
 
     public void incAmountOfDays() {
+        isComplete = isComplete || cities.stream().allMatch(CityModel::checkComplete);
         if (!isComplete) {
             amountOfDays++;
         }
     }
 
-    public boolean checkComplete() {
-        isComplete = isComplete || cities.stream().allMatch(CityModel::checkComplete);
-        return isComplete;
-    }
-
     public void addCity(CityModel city) {
         cities.add(city);
+    }
+
+    public String getUniqueName() {
+        return name + "@" + xl + yl + xh + yh;
     }
 }

@@ -9,24 +9,9 @@
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout pattern="${pattern}"/>
         </Console>
-        <RollingFile
-                name="SERVER_LOGS_FILE"
-                fileName="${serverLogsFilepath}/log.log"
-                filePattern="${serverLogsFilepath}/log.%d{yyyy-MM-dd}-%i.log"
-                ignoreExceptions="false">
-            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
-            <PatternLayout pattern="${pattern}"/>
-            <Policies>
-                <OnStartupTriggeringPolicy/>
-                <SizeBasedTriggeringPolicy size="100 MB"/>
-                <TimeBasedTriggeringPolicy/>
-            </Policies>
-            <DefaultRolloverStrategy max="10"/>
-        </RollingFile>
     </Appenders>
     <Loggers>
         <Root level="DEBUG">
-<!--            <AppenderRef ref="SERVER_LOGS_FILE"/>-->
             <AppenderRef ref="STDOUT"/>
         </Root>
         <Logger name="com.gmail.maxsvynarchuk" level="DEBUG" additivity="false">

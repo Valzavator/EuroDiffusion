@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Builder
 @Value
-public class CountryData {
+public class InputCountryData {
     String name;
     int xl;
     int yl;

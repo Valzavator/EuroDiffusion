@@ -20,7 +20,8 @@ class BankModel {
     @Getter(AccessLevel.NONE)
     Map<String, Integer> bank;
     @NonFinal
-    List<TransactionModel> transactions = new ArrayList<>();
+    List<TransactionModel> incomingTransactions = new ArrayList<>();
+    List<TransactionModel> outgoingTransactions = new ArrayList<>();
 
     public BankModel(List<String> motifs, String rootCountryMotif) {
         bank = motifs.stream()
@@ -35,21 +36,28 @@ class BankModel {
     }
 
     public TransactionModel getTransactionForNeighbour() {
-        return new TransactionModel(bank.entrySet().stream()
+        TransactionModel newOutgoingTransaction = new TransactionModel(bank.entrySet().stream()
                 .filter(entry -> entry.getValue() >= REPRESENTATIVE_PORTION_DIVISOR)
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> getRepresentativePortion(entry.getValue()))
                 ));
+        outgoingTransactions.add(newOutgoingTransaction);
+        return newOutgoingTransaction;
     }
 
     public void addTransaction(TransactionModel transaction) {
-        transactions.add(transaction);
+        incomingTransactions.add(transaction);
     }
 
     public void executeTransactions() {
-        transactions.forEach(transaction -> transaction.getMotifValues()
+        outgoingTransactions.forEach(transaction -> transaction.getMotifValues()
+                .forEach((motif, value) -> addTransactionMotif(motif, -value)));
+        outgoingTransactions.clear();
+
+        incomingTransactions.forEach(transaction -> transaction.getMotifValues()
                 .forEach(this::addTransactionMotif));
+        incomingTransactions.clear();
     }
 
     private void addTransactionMotif(String transactionMotif, Integer transactionValue) {
