@@ -26,7 +26,7 @@ class BankModel {
     public BankModel(List<String> motifs, String rootCountryMotif) {
         bank = motifs.stream()
                 .collect(Collectors.toMap(Function.identity(), motif -> 0));
-        bank.compute(rootCountryMotif, (k, v) -> INITIAL_AMOUNT);
+        bank.put(rootCountryMotif, INITIAL_AMOUNT);
     }
 
     public boolean isEveryMotivePresent() {
