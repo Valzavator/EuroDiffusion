@@ -1,4 +1,4 @@
-package com.gmail.maxsmv1998.eurodiffusion.util.comporator;
+package com.gmail.maxsmv1998.eurodiffusion.util.comparator;
 
 import com.gmail.maxsmv1998.eurodiffusion.data.OutputCountryData;
 

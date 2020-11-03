@@ -5,7 +5,7 @@ import com.gmail.maxsmv1998.eurodiffusion.data.InputCountryData;
 import com.gmail.maxsmv1998.eurodiffusion.data.OutputCountryData;
 import com.gmail.maxsmv1998.eurodiffusion.data.ResultData;
 import com.gmail.maxsmv1998.eurodiffusion.data.TestCaseData;
-import com.gmail.maxsmv1998.eurodiffusion.util.comporator.OutputCountryDataComparator;
+import com.gmail.maxsmv1998.eurodiffusion.util.comparator.OutputCountryDataComparator;
 import com.gmail.maxsmv1998.eurodiffusion.util.validator.CountryValidatorManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
